@@ -1,7 +1,7 @@
 #
 # Copyright Amazon AWS DeepLens, 2017
 #
-from botocore.session import Session
+import botocore.session
 import boto3
 
 import os
@@ -42,18 +42,17 @@ class FIFO_Thread(Thread):
 
 
 def write_image_to_s3(img):
-    session = Session()
+    session = botocore.session.Session()
     s3 = session.create_client('s3')
     file_name = 'stranger.jpg'
         # You can contorl the size and quality of the image
     encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
     _, jpg_data = cv2.imencode('.jpg', img, encode_param)
 
-    mac = open('/sys/class/net/mlan0/address').readline() 
-    response = s3.put_object(ACL='public-read', Body=mac,Bucket='graciafamilyphoto',Key='mac.txt')
-    response = s3.put_object(ACL='public-read', Body=jpg_data.tostring(),Bucket='graciafamilyphoto',Key=file_name)
+
+    response = s3.put_object(ACL='public-read', Body=jpg_data.tostring(),Bucket='bquintas-family',Key=file_name)
     
-    image_url = 'https://s3-us-west-2.amazonaws.com/graciafamilyphoto/'+file_name
+    image_url = 'https://s3-eu-central-1.amazonaws.com/bquintas-family/'+file_name
     return image_url
     
 def greengrass_infinite_infer_run():
